@@ -77,12 +77,12 @@ def find_jobs_freshman(page):
 def collecting(location_job, url_job, data):
     "collecting job into data"
     found = 0
-    for o in data:
-        if o['location'] == location_job:
+    for job in data:            # looking for same location in data
+        if job['location'] == location_job:
             if isinstance(url_job, list):
-                o['urls'] = url_job + o['urls']
+                job['urls'] = url_job + job['urls']
             else:
-                o['urls'].append(url_job)
+                job['urls'].append(url_job)
             found = 1
             break
     if found == 0:
