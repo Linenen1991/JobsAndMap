@@ -2,8 +2,43 @@ import re
 import json
 from urllib.request import urlopen
 from urllib.error import HTTPError
+import unittest
 import googlemaps
 from bs4 import BeautifulSoup
+
+
+class BasicTest(unittest.TestCase):
+    "unit test class"
+
+    def test_collecting_single_url(self):
+        "test collecting function with single url"
+        result = []
+        collecting({
+            "lat": 23.0366225,
+            "lng": 120.242345
+        }, "http://google.com", result)
+        self.assertListEqual(result, [{
+            "location": {
+                "lat": 23.0366225,
+                "lng": 120.242345
+            },
+            "urls": ["http://google.com"]
+        }])
+
+    def test_collecting_list_url(self):
+        "test collecting function with list url"
+        result = []
+        collecting({
+            "lat": 23.0366225,
+            "lng": 120.242345
+        }, ["http://yahoo.com", "http://google.com"], result)
+        self.assertListEqual(result, [{
+            "location": {
+                "lat": 23.0366225,
+                "lng": 120.242345
+            },
+            "urls": [ "http://yahoo.com","http://google.com"]
+        }])
 
 
 def parse_html(www):
@@ -77,7 +112,7 @@ def find_jobs_freshman(page):
 def collecting(location_job, url_job, data):
     "collecting job into data"
     found = 0
-    for job in data:            # looking for same location in data
+    for job in data:  # looking for same location in data
         if job['location'] == location_job:
             if isinstance(url_job, list):
                 job['urls'] = url_job + job['urls']
@@ -91,6 +126,7 @@ def collecting(location_job, url_job, data):
         else:
             data.append({"location": location_job, "urls": [url_job]})
 
+
 def dump_to_file(dic, file_name, be_var=None):
     "save the dic to js file"
     with open(file_name, 'w') as outfile:
@@ -99,3 +135,7 @@ def dump_to_file(dic, file_name, be_var=None):
             outfile.write("var data =")
         json.dump(dic, outfile)
         outfile.close()
+
+
+if __name__ == '__main__':
+    unittest.main()
