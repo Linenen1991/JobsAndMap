@@ -1,0 +1,99 @@
+<html>
+
+<head>
+    <style>
+        #map_wrapper {
+            height: 70%;
+        }
+        
+        #map_canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        #floating-panel {
+            position: absolute;
+            top: 10px;
+            left: 25%;
+            z-index: 5;
+            background-color: #fff;
+            padding: 5px;
+            border: 1px solid #999;
+            text-align: center;
+            font-family: 'Roboto', 'sans-serif';
+            line-height: 30px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<script type="text/javascript" src="./freshman.json"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=APIKEY&signed_in=true&callback=initialize" async defer></script>
+</script>
+<script>
+    function initialize() {
+        var map;
+        var show_plane = document.getElementById("job_list");
+        var bounds = new google.maps.LatLngBounds();
+        var pre_marker = 0
+            // Display a map on the page
+        map = new google.maps.Map(document.getElementById("map_canvas"), {
+            mapTypeId: 'roadmap',
+        });
+        // Display multiple markers on a map
+        var marker, i,home;
+        var home_marker = new google.maps.Marker({
+            position: home,
+            icon: {
+                path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                scale:5
+            },
+            map: map
+        });
+        // Loop through our array of markers & place each one on the map
+        for (i = 0; i < data.length; i++) {
+            var position = data[i]['location'];
+            bounds.extend(position);
+            marker = new google.maps.Marker({
+                position: position,
+                map: map
+            });
+            document.getElementById('goback').addEventListener('click', function() {
+                map.setCenter(home);
+            });
+            google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                return function() {
+                    show_plane.innerHTML = ''
+                    if (pre_marker != 0)
+                        pre_marker.setLabel("O")
+                    pre_marker = marker
+                    marker.setLabel('Current')
+                    var j = 0;
+                    for (j = 0; j < data[i]['urls'].length; j++) {
+                        var a = document.createElement('a');
+                        var linkText = document.createTextNode(data[i]['urls'][j]);
+                        a.appendChild(linkText);
+                        a.href = data[i]['urls'][j];
+                        a.target = "\_blank";
+                        var br = document.createElement("br");
+                        a.appendChild(br);
+                        show_plane.appendChild(a);
+                    }
+                }
+            })(marker, i));
+            map.fitBounds(bounds);
+        }
+    }
+</script>
+
+<body>
+    <div id="floating-panel">
+        <input id="goback" type="button" value="goback">
+    </div>
+    <div id="map_wrapper">
+        <div id="map_canvas" class="mapping"></div>
+    </div>
+    <div id="job_list">
+    </div>
+</body>
+
+</html>
